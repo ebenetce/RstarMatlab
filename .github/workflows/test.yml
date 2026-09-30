@@ -30,8 +30,8 @@ jobs:
         with:
           command: test
 
-     - name: Upload Pages artifact
-       if: always()
-       uses: actions/upload-pages-artifact@v5
-       with:
-         path: public/
+      - name: Upload Pages artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: public/
