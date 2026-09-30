@@ -1,5 +1,6 @@
 %[text] # Recreate U.S. HLW2023 Inputs from FRED
 %[text] Retrieve the four FRED series used for the U.S. core inputs and combine them with the published HLW COVID indicator.
+%[text] Copyright 2026 The MathWorks, Inc.
 %[text] ## Retrieve and transform data
 %[text] Store a FRED API key in the MATLAB vault with `setSecret("FREDKEY", key)` before running this section.
 %[text] **1. Get FRED connection**

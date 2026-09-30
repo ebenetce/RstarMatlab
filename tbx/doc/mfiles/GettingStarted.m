@@ -1,7 +1,8 @@
 %[text] # Getting Started with Rstar in MATLAB
 %[text] Estimate the natural rate of interest with the current Laubach-Williams and Holston-Laubach-Williams data published by the Federal Reserve Bank of New York.
 %[text] The companion [FRED input-recreation script](http://recreatehlw2023usinputfromfred.m) rebuilds the U.S. core HLW2023 inputs.
-%[text:tableOfContents]{"heading":"**Table of Contents**"}
+%[text] Copyright 2026 The MathWorks, Inc.
+%[text:tableOfContents]{"heading":"Table of Contents"}
 %[text] ## Current U.S. Laubach-Williams estimates
 %[text] Download the current U.S. inputs, estimate the COVID-adjusted LW2023 model, and plot the filtered natural rate and trend growth.
 %[text] #### Gather the data

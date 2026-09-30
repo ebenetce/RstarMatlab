@@ -34,3 +34,23 @@ jobs:
           name: Rstar-${{ github.ref_name }}
           path: release/Rstar.mltbx
           if-no-files-found: error
+
+  release:
+    needs: package
+    if: success()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download toolbox artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: Rstar-${{ github.ref_name }}
+          path: release
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: release/Rstar.mltbx
+          fail_on_unmatched_files: true
+          generate_release_notes: true

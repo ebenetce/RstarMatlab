@@ -37,8 +37,7 @@ options.ToolboxVersion = v;
 options.Summary = "Natural-rate estimators for LW and HLW models.";
 options.OutputFile = outputFile;
 options.ProductDependencies = "Econometrics Toolbox";
-options.GettingState
-
+options.ToolboxGettingStartedGuide = fullfile(context.Plan.RootFolder, 'tbx', 'doc', 'mfiles', 'GettingStarted.m');
 matlab.addons.toolbox.packageToolbox(options);
 end
 
