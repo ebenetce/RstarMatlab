@@ -1,0 +1,37 @@
+# Copyright 2026 The MathWorks, Inc.
+
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      MLM_LICENSE_FILE: ${{ secrets.MLM_LICENSE_FILE }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2026b
+          products: Econometrics_Toolbox
+
+      - name: Run tests
+        uses: matlab-actions/run-build@v3
+        with:
+          command: test
+
+     - name: Upload Pages artifact
+       if: always()
+       uses: actions/upload-pages-artifact@v5
+       with:
+         path: public/

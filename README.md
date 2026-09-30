@@ -1,79 +1,100 @@
-# Rstar MATLAB replication workspace
+<!-- Copyright 2026 The MathWorks, Inc. -->
 
-This workspace contains the supplied R replication sources and an in-progress
-MATLAB implementation of the Holston-Laubach-Williams (HLW) natural-rate
-estimator.
+# Rstar
 
-## What runs today
+Rstar is a MATLAB toolbox for estimating the natural rate of interest using
+the Laubach-Williams (LW) and Holston-Laubach-Williams (HLW) models, including
+their COVID-adjusted 2023 specifications.
 
-`rstar("LW").estimate(data)` and `rstar("HLW").estimate(data)` run the
-three-stage original estimators. LW requires the supplied replication
-variables `gdp.log`, `inflation`, `inflation.expectations`,
-`oil.price.inflation`, `import.price.inflation`, and `interest`.
+The toolbox is an independent MATLAB implementation. Current and real-time
+published inputs and estimates are provided by the
+[Federal Reserve Bank of New York](https://www.newyorkfed.org/research/policy/rstar).
 
-- `gdp.log`
-- `inflation`
-- `inflation.expectations`
-- `interest`
+## Requirements
 
-Use `data/rstar.data.us.csv` as the bundled HLW U.S. input. This requires
-Econometrics Toolbox and Optimization Toolbox.
+- MATLAB R2026a or newer
+- Econometrics Toolbox
+- Optimization Toolbox
 
-The full LW-2023 and HLW-2023 estimators are available through their public
-model interfaces. LW-2023 additionally requires `Date` and `covid.ind`; use
-`resources/Laubach_Williams_current_estimates.xlsx`, sheet `input data`, as
-the bundled current LW vintage.
-
-## Public interface
-
-Construct each published specification through the two top-level factories:
+The optional FRED input-recreation example also requires Datafeed Toolbox and
+a FRED API key stored in the MATLAB vault:
 
 ```matlab
-options = rstarOptions("HLW2023", SampleEnd=datetime(2024, 1, 1));
-model = rstar("HLW2023", options);
-result = model.estimate(data);
+setSecret("FREDKEY", "your-fred-api-key")
 ```
 
-`rstarOptions` returns settings for the selected model and `rstar` returns
-its corresponding model class. The supported model identities are `"LW"`,
-`"LW2023"`, `"HLW"`, and `"HLW2023"`.
+## Install
 
-For the COVID-adjusted models, pass an `optim.options.Fmincon` object through
-`OptimizationOptions` to change the maximum-likelihood optimizer settings.
-`maximumLikelihoodOptions` accepts every public `optim.options.Fmincon`
-name-value option while retaining the project defaults for unspecified values:
+Install the packaged toolbox from a release, or clone this repository and add
+the package folder to the MATLAB path:
 
 ```matlab
-optimizationOptions = rstar.utils.maximumLikelihoodOptions( ...
-    MaxIterations=20000, MaxFunctionEvaluations=50000);
-options = rstarOptions("HLW2023", OptimizationOptions=optimizationOptions);
-result = rstar("HLW2023", options).estimate(data);
+addpath("tbx/rstar")
 ```
 
-## Replication status
+## Quick start
 
-| Variant | MATLAB status | R reference |
-| --- | --- | --- |
-| HLW 2017-style U.S. model | Runnable, smoke-tested | `HLW_Code/` |
-| Laubach-Williams (LW) | Runnable through the public model interface | `LW_replication/` |
-| Laubach-Williams 2023 | Runnable through the public model interface | `LW_2023_Replication_Code/` |
-| HLW 2023 COVID-adjusted model | Runnable through the public model interface; validated against bundled R fixture | `HLW_2023_Replication_Code/` |
+```matlab
+url = "https://www.newyorkfed.org/medialibrary/media/research/" + ...
+    "economists/williams/data/Holston_Laubach_Williams_current_estimates.xlsx";
+data = readtable(url, Sheet="US input data", ...
+    VariableNamingRule="preserve", TextType="string");
 
-Source-generated U.S. HLW-2023 fixtures are under
-`HLW_2023_Replication_Code/output/`. They were produced from the bundled R
-replication in a disposable R 4.4.3 container, with only the optional
-Monte-Carlo standard errors disabled.
+optimizer = rstar.utils.maximumLikelihoodOptions(ScaleProblem=true);
+options = rstarOptions("HLW2023", OptimizationOptions=optimizer, ...
+    Verbose=false);
+results = rstar("HLW2023", options).estimate(data);
+```
 
-The planned MATLAB implementation uses Econometrics Toolbox `ssm` with a
-time-varying observation-noise map for the kappa terms. The Bayesian `bssm`
-and `bnlssm` objects are not appropriate for this maximum-likelihood
-replication.
+For HLW2023, `ScaleProblem=true` improves conditioning of the constrained
+maximum-likelihood problem and reproduces the published Canada solution with
+the interior-point algorithm.
 
-## Layout
+See [GettingStarted.m](tbx/doc/mfiles/GettingStarted.m) for complete U.S.,
+Canada, and euro-area examples. The companion
+[RecreateHLW2023USInputFromFRED.m](tbx/doc/mfiles/RecreateHLW2023USInputFromFRED.m)
+rebuilds the U.S. core input series with `fredrs`.
 
-- `tbx/rstar/+rstar/` — MATLAB package implementation
-- `examples/` — portable entry points
-- `tests/` — MATLAB unit and integration tests
-- `data/` — bundled MATLAB input data
-- `LW_replication/`, `HLW_Code/`, `HLW_2023_Replication_Code/` — source R
-  replications retained as references
+## Models
+
+| Model | Description |
+| --- | --- |
+| `LW` | Original Laubach-Williams model |
+| `HLW` | Original Holston-Laubach-Williams model |
+| `LW2023` | COVID-adjusted Laubach-Williams model |
+| `HLW2023` | COVID-adjusted Holston-Laubach-Williams model |
+
+Create a model with `rstar(modelName, options)` and configuration with
+`rstarOptions(modelName)`.
+
+## Test and package
+
+Tests download the current NY Fed workbooks into a temporary cache on first
+use; no published Excel fixture is required in the repository.
+
+```matlab
+buildtool test
+buildtool package
+```
+
+`buildtool package` runs code checks, tests, documentation generation, and
+creates `release/Rstar.mltbx`.
+
+## Continuous integration
+
+GitHub Actions runs the test suite on pushes and pull requests. Pushing a
+semantic-version tag such as `v1.0.0` builds the toolbox and uploads the
+`.mltbx` file as a workflow artifact. Configure the repository
+`MLM_LICENSE_FILE` secret when the selected MATLAB installation requires a
+license server or license file.
+
+## References
+
+- Laubach, T., and J. C. Williams (2003), “Measuring the Natural Rate of
+  Interest,” *Review of Economics and Statistics*, 85(4), 1063–1070.
+- Holston, K., T. Laubach, and J. C. Williams (2017), “Measuring the Natural
+  Rate of Interest: International Trends and Determinants,” *Journal of
+  International Economics*, 108(S1), S59–S75.
+- Holston, K., T. Laubach, and J. C. Williams (2023), “Measuring the Natural
+  Rate of Interest after COVID-19,” *Federal Reserve Bank of New York Staff
+  Reports*, no. 1063.

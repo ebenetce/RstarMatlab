@@ -1,0 +1,37 @@
+# Copyright 2026 The MathWorks, Inc.
+
+name: Package
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      MLM_LICENSE_FILE: ${{ secrets.MLM_LICENSE_FILE }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          release: R2026b
+          products: Econometrics_Toolbox
+
+      - name: Build toolbox
+        uses: matlab-actions/run-build@v3
+        with:
+          command: package
+
+      - name: Upload toolbox
+        uses: actions/upload-artifact@v7
+        with:
+          name: Rstar-${{ github.ref_name }}
+          path: release/Rstar.mltbx
+          if-no-files-found: error

@@ -1,3 +1,5 @@
+# Copyright 2026 The MathWorks, Inc.
+
 # Holston-Laubach-Williams (HLW)
 
 `HLW` implements the original Holston-Laubach-Williams natural-rate

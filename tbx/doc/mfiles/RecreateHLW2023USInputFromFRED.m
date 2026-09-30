@@ -1,13 +1,14 @@
+% Copyright 2026 The MathWorks, Inc.
+
 %% Recreate the U.S. HLW-2023 inputs from FRED
 %
 % This script retrieves the four FRED series used for the U.S. core inputs:
 % GDPC1, PCEPILFE, INTDSRUSM193N, and FEDFUNDS. Store a FRED API key in
 % the MATLAB vault with setSecret("FREDKEY", key) before running it.
 %
-% FRED data are revised over time, so a current download need not match
-% every historical workbook value exactly. The COVID indicator is a
-% published HLW model input, not a FRED series; this script obtains it
-% from the current HLW workbook to form a complete estimator input table.
+% The COVID indicator is a published HLW model input, not a FRED series;
+% this script obtains it from the current HLW workbook to form a complete
+% estimator input table.
 
 fred = fredrs(getSecret("FREDKEY"));
 
@@ -24,14 +25,18 @@ gdp.Properties.VariableNames = "gdp";
 pce.Properties.VariableNames = "pce";
 discountRate.Properties.VariableNames = "discount";
 fedFundsRate.Properties.VariableNames = "fedFunds";
-data = synchronize(gdp, pce, discountRate, fedFundsRate, "intersection");
+data = synchronize(gdp, pce, fedFundsRate, "intersection");
 
 inflation = 400 * [NaN; diff(log(data.pce))];
 inflationExpectations = movmean(inflation, [3, 0]);
 inflationExpectations(1:3) = NaN;
-interest = data.discount;
-interest(data.Time >= datetime(1965, 1, 1)) = ...
-    data.fedFunds(data.Time >= datetime(1965, 1, 1));
+interest = data.fedFunds;
+usesDiscountRate = data.Time < datetime(1965, 1, 1);
+[hasDiscountRate, discountIndex] = ismember(data.Time(usesDiscountRate), ...
+    discountRate.Time);
+assert(all(hasDiscountRate), ...
+    "The discount-rate series is missing an early quarterly observation.")
+interest(usesDiscountRate) = discountRate.discount(discountIndex);
 
 coreInputs = timetable(log(data.gdp), inflation, inflationExpectations, ...
     interest, RowTimes=data.Time, VariableNames=["gdp.log", "inflation", ...
@@ -45,19 +50,10 @@ publishedInputs = readtable(hlwUrl, Sheet="US input data", ...
 covid = timetable(publishedInputs.("covid.ind"), ...
     RowTimes=publishedInputs.date, VariableNames="covid.ind");
 
-hlwInputs = synchronize(coreInputs, chttps://github.com/ebenetce/RstarMatlab.gitovid, "intersection");
+hlwInputs = synchronize(coreInputs, covid, "intersection");
 hlwInputs = timetable2table(hlwInputs, ConvertRowTimes=true);
 hlwInputs.Properties.VariableNames(1) = {'date'};
-
-% Compare the four FRED-derived columns with the published current vintage.
-publishedCore = table2timetable(publishedInputs(:, ...
-    ["date", "gdp.log", "inflation", "inflation.expectations", "interest"]), ...
-    RowTimes="date");
-comparison = synchronize(coreInputs, publishedCore, "intersection");
-differences = comparison{:, 1:4} - comparison{:, 5:8};
-fprintf("Maximum absolute FRED-vintage differences:\n")
-disp(array2table(max(abs(differences), [], 1), ...
-    VariableNames=coreInputs.Properties.VariableNames))
+hlwInputs
 
 function output = quarterlySeries(connection, seriesID)
 observations = series(connection, seriesID, "observations");

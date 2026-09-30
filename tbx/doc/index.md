@@ -1,3 +1,5 @@
+# Copyright 2026 The MathWorks, Inc.
+
 # Rstar toolbox
 
 Rstar estimates the natural rate of interest with the Laubach-Williams (LW)

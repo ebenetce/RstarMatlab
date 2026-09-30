@@ -1,3 +1,5 @@
+# Copyright 2026 The MathWorks, Inc.
+
 # Laubach-Williams (LW)
 
 `LW` implements the original Laubach-Williams natural-rate estimator.

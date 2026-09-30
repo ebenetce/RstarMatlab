@@ -1,3 +1,5 @@
+% Copyright 2026 The MathWorks, Inc.
+
 %% Reproduce the current U.S. Laubach-Williams estimates
 %
 % To rebuild the U.S. HLW-2023 input series from FRED, open

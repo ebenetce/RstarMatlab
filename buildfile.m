@@ -1,3 +1,5 @@
+% Copyright 2026 The MathWorks, Inc.
+
 function plan = buildfile
 %buildfile Define code-check, test, and toolbox-package build tasks.
 import matlab.buildtool.tasks.*
