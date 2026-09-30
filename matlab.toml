@@ -1,0 +1,10 @@
+name = "Rstar"
+
+[folders]
+path = [
+    "tbx/doc",
+    "tbx/rstar",
+]
+test = [
+    "tests",
+]
