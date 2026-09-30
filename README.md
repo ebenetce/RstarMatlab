@@ -1,4 +1,9 @@
-# Rstar
+# Natural Rate of Interest (Rstar) MATLAB
+
+[![Rstar CI](https://github.com/ebenetce/RstarMatlab/actions/workflows/test.yml/badge.svg)](https://ebenetce.github.io/RstarMatlab/results.html)
+[![coverage](https://img.shields.io/badge/dynamic/xml?url=https://ebenetce.github.io/RstarMatlab/coverage.xml&query=round%28//coverage/@line-rate%2A100%29&suffix=%25&label=coverage)](https://ebenetce.github.io/RstarMatlab/coverage.html)
+
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=ebenetce/RstarMatlab&project=matlab.toml&file=tbx/doc/mfiles/GettingStarted.m)
 
 Rstar is a MATLAB&reg; toolbox for estimating the natural rate of interest using
 the Laubach-Williams (LW) and Holston-Laubach-Williams (HLW) models, including
