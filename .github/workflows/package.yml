@@ -1,4 +1,5 @@
-# Copyright 2026 The MathWorks, Inc.
+env:
+  DOCMAKER_GITHUB_TOKEN: ${{ secrets.DOCMAKER_GITHUB_TOKEN }}
 
 name: Package
 
@@ -13,8 +14,6 @@ permissions:
 jobs:
   package:
     runs-on: ubuntu-latest
-    env:
-      MLM_LICENSE_FILE: ${{ secrets.MLM_LICENSE_FILE }}
     steps:
       - uses: actions/checkout@v7
 
@@ -27,7 +26,7 @@ jobs:
       - name: Build toolbox
         uses: matlab-actions/run-build@v3
         with:
-          command: package
+          tasks: package
 
       - name: Upload toolbox
         uses: actions/upload-artifact@v7
