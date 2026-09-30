@@ -1,23 +1,19 @@
-<!-- Copyright 2026 The MathWorks, Inc. -->
-
 # Rstar
 
-Rstar is a MATLAB toolbox for estimating the natural rate of interest using
+Rstar is a MATLAB&reg; toolbox for estimating the natural rate of interest using
 the Laubach-Williams (LW) and Holston-Laubach-Williams (HLW) models, including
 their COVID-adjusted 2023 specifications.
 
-The toolbox is an independent MATLAB implementation. Current and real-time
+The toolbox is an independent MATLAB&reg; implementation. Current and real-time
 published inputs and estimates are provided by the
 [Federal Reserve Bank of New York](https://www.newyorkfed.org/research/policy/rstar).
 
 ## Requirements
 
-- MATLAB R2026a or newer
-- Econometrics Toolbox
-- Optimization Toolbox
+- Econometrics Toolbox&trade;
 
-The optional FRED input-recreation example also requires Datafeed Toolbox and
-a FRED API key stored in the MATLAB vault:
+The optional FRED input-recreation example also requires Datafeed Toolbox&trade; and
+a FRED API key stored in the MATLAB&reg; vault:
 
 ```matlab
 setSecret("FREDKEY", "your-fred-api-key")
@@ -25,12 +21,22 @@ setSecret("FREDKEY", "your-fred-api-key")
 
 ## Install
 
-Install the packaged toolbox from a release, or clone this repository and add
-the package folder to the MATLAB path:
 
-```matlab
-addpath("tbx/rstar")
-```
+1. **Download** the [latest release](https://github.com/mathworks/RstarMatlab/releases/latest/download/Rstar.mltbx), or pick an older version from the [releases page](https://github.com/mathworks/RstarMatlab/releases).
+
+2. **Install** the toolbox by double-clicking `Rstar.mltbx`, or from the MATLAB command window (with the file in your current folder):
+
+   - **R2026b and later:**
+
+    ```matlab
+    mpminstall("Rstar.mltbx", Prompt = false)
+    ```
+
+   - **Earlier releases:**
+
+    ```matlab
+    matlab.addons.install("Rstar.mltbx")
+    ```
 
 ## Quick start
 
@@ -39,16 +45,8 @@ url = "https://www.newyorkfed.org/medialibrary/media/research/" + ...
     "economists/williams/data/Holston_Laubach_Williams_current_estimates.xlsx";
 data = readtable(url, Sheet="US input data", ...
     VariableNamingRule="preserve", TextType="string");
-
-optimizer = rstar.utils.maximumLikelihoodOptions(ScaleProblem=true);
-options = rstarOptions("HLW2023", OptimizationOptions=optimizer, ...
-    Verbose=false);
 results = rstar("HLW2023", options).estimate(data);
 ```
-
-For HLW2023, `ScaleProblem=true` improves conditioning of the constrained
-maximum-likelihood problem and reproduces the published Canada solution with
-the interior-point algorithm.
 
 See [GettingStarted.m](tbx/doc/mfiles/GettingStarted.m) for complete U.S.,
 Canada, and euro-area examples. The companion
@@ -79,14 +77,6 @@ buildtool package
 
 `buildtool package` runs code checks, tests, documentation generation, and
 creates `release/Rstar.mltbx`.
-
-## Continuous integration
-
-GitHub Actions runs the test suite on pushes and pull requests. Pushing a
-semantic-version tag such as `v1.0.0` builds the toolbox and uploads the
-`.mltbx` file as a workflow artifact. Configure the repository
-`MLM_LICENSE_FILE` secret when the selected MATLAB installation requires a
-license server or license file.
 
 ## References
 
